@@ -1,18 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func cellDrawer(cellStatus bool) string {
 	if cellStatus {
-		return "0"
+		return "x"
 	} else {
 		return "."
 	}
 }
 
 func main() {
-	col := 8
-	row := 8
+	col := 3
+	row := 3
 	iter := 5
 
 	cell := make([][]bool, col)
@@ -20,7 +22,18 @@ func main() {
 		cell[i] = make([]bool, row)
 	}
 
-	prem := [][]int{{2, 2}, {3, 2}, {3, 3}, {2, 3}, {1, 3}}
+	ncell := make([][]int, col)
+	for i := range col {
+		ncell[i] = make([]int, row)
+	}
+
+	dir := [][2]int{
+		{-1, -1}, {-1, 0}, {-1, 1},
+		{0, -1}, {0, 1},
+		{1, -1}, {1, 0}, {1, 1},
+	}
+
+	prem := [][]int{{0, 1}, {1, 0}, {2, 1}}
 
 	for i := range prem {
 		px := prem[i][0]
@@ -37,6 +50,36 @@ func main() {
 			}
 			fmt.Println()
 		}
-	}
+		for i := range col {
+			for j := range row {
+				neighbors := 0
 
+				for _, n := range dir {
+					ni, nj := i+n[0], j+n[1]
+					if ni >= 0 && nj >= 0 && ni < row && nj < col && cell[ni][nj] {
+						neighbors++
+					}
+				}
+
+				ncell[i][j] = neighbors
+
+			}
+		}
+
+		for i := range col {
+			for j := range row {
+				if cell[i][j] {
+					if ncell[i][j] < 2 {
+						cell[i][j] = false
+					} else if ncell[i][j] > 3 {
+						cell[i][j] = false
+					}
+				} else {
+					if ncell[i][j] == 3 {
+						cell[i][j] = true
+					}
+				}
+			}
+		}
+	}
 }
